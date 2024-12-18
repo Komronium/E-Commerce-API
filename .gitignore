@@ -1,0 +1,6 @@
+.fleet/
+.venv/
+__pycache__/
+
+.env
+test.db
