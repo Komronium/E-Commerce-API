@@ -9,16 +9,24 @@ from app.schemas.user import UserCreate, UserUpdate
 class UserService:
 
     @staticmethod
+    def _get_user_or_404(db: Session, user_id: UUID4) -> User:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'User with ID {user_id} not found',
+            )
+        return user
+
+
+    @staticmethod
     async def get_all_users(db: Session, page: int, limit: int, search: str = ''):
         query = db.query(User).filter(User.email.contains(search))
         return query.limit(limit).offset((page - 1) * limit).all()
 
     @staticmethod
     async def get_user(db: Session, user_id: UUID4):
-       user = db.query(User).filter(User.id == user_id).first()
-       if not user:
-           raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-       return user
+        return UserService._get_user_or_404(db, user_id)
 
     @staticmethod
     async def create_user(db: Session, user: UserCreate):
@@ -35,12 +43,11 @@ class UserService:
 
     @staticmethod
     async def update_user(db: Session, user_id: UUID4, user: UserUpdate):
-        db_user = db.query(User).filter(User.id == user_id).first()
-        if not db_user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+        db_user = UserService._get_user_or_404(db, user_id)
 
         for key, value in user.model_dump().items():
-            setattr(db_user, key, value or getattr(db_user, key))
+            if value is not None:
+                setattr(db_user, key, value)
 
         db.commit()
         db.refresh(db_user)
@@ -48,9 +55,6 @@ class UserService:
 
     @staticmethod
     async def delete_user(db: Session, user_id: UUID4):
-        db_user = db.query(User).filter(User.id == user_id).first()
-        if not db_user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-
+        db_user = UserService._get_user_or_404(db, user_id)
         db.delete(db_user)
         db.commit()

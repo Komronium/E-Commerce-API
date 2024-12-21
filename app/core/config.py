@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'E-Commerce API'
-    PROJECT_VERSION: str = '1.0.0'
+    PROJECT_VERSION: str = '1.0.1'
     DATABASE_URL: str = 'sqlite:///./test.db'
 
     SECRET_KEY: str
