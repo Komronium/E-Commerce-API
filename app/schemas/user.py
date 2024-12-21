@@ -11,7 +11,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    pass
+    email: EmailStr | None = None
 
 
 class UserOut(UserBase):

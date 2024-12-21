@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
-from app.api.v1 import users
+from app.api.v1 import users, auth, profile
 
 
 @asynccontextmanager
@@ -19,3 +19,5 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
+app.include_router(auth.router)
+app.include_router(profile.router)

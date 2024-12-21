@@ -1,7 +1,7 @@
 from pydantic import UUID4
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.core.security import get_password_hash
+from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 
@@ -25,7 +25,7 @@ class UserService:
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Email already exists')
-        hashed_password = get_password_hash(user.password)
+        hashed_password = hash_password(user.password)
         user.password = hashed_password
         db_user = User(**user.model_dump())
         db.add(db_user)
@@ -40,7 +40,7 @@ class UserService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
 
         for key, value in user.model_dump().items():
-            setattr(db_user, key, value)
+            setattr(db_user, key, value or getattr(db_user, key))
 
         db.commit()
         db.refresh(db_user)
