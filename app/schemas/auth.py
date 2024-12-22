@@ -15,3 +15,8 @@ class SignupRequest(BaseModel):
     name: str | None = None
     email: EmailStr
     password: str = Field(..., min_length=8)
+
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str

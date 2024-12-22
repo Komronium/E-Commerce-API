@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'User Management API'
-    PROJECT_VERSION: str = '1.0.2'
+    PROJECT_VERSION: str = '1.0.3'
     DATABASE_URL: str = 'sqlite:///./test.db'
 
     SECRET_KEY: str
